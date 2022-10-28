@@ -11,21 +11,25 @@ from config import global_config
 class Timer(object):
     def __init__(self, sleep_interval=0.5):
         # '2018-09-28 22:45:50.000'
-        self.buy_time = datetime.strptime(global_config.getRaw('config','buy_time'), "%Y-%m-%d %H:%M:%S.%f")
+        self.buy_time = datetime.strptime(global_config.getRaw('config', 'buy_time'), "%Y-%m-%d %H:%M:%S.%f")
         self.buy_time_ms = int(time.mktime(self.buy_time.timetuple()) * 1000.0 + self.buy_time.microsecond / 1000)
         self.sleep_interval = sleep_interval
 
-        self.diff_time = self.local_jd_time_diff()
+        # self.diff_time = self.local_jd_time_diff()
+        self.diff_time = 0
 
     def jd_time(self):
         """
         从京东服务器获取时间毫秒
         :return:
         """
-        url = 'https://a.jd.com//ajax/queryServerData.html'
-        ret = requests.get(url).text
+        url = 'https://api.m.jd.com/client.action?functionId=queryMaterialProducts&client=wh5'
+        response = requests.get(url)
+        ret = response.text
+        print(ret)
         js = json.loads(ret)
-        return int(js["serverTime"])
+
+        return int(js["currentTime2"])
 
     def local_time(self):
         """
